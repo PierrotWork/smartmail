@@ -62,9 +62,7 @@ def update(
 
 
 @router.post("/{template_id}/preview")
-def preview(
-    template_id: int, payload: PreviewRequest, db: DbSession, user: CurrentUser
-) -> dict:
+def preview(template_id: int, payload: PreviewRequest, db: DbSession, user: CurrentUser) -> dict:
     template = service.get_template(db, template_id)
     if template is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Шаблон не найден")

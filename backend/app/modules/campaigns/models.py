@@ -87,6 +87,4 @@ class CampaignRecipient(Base):
 
     campaign: Mapped[Campaign] = relationship(back_populates="recipients")
 
-    __table_args__ = (
-        Index("ix_recipients_campaign_status", "campaign_id", "status"),
-    )
+    __table_args__ = (Index("ix_recipients_campaign_status", "campaign_id", "status"),)

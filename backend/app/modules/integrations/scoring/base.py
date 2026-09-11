@@ -7,7 +7,7 @@ from typing import Any, Protocol, runtime_checkable
 @dataclass
 class ScoreResult:
     client_id: int
-    score: float           # 0..100
+    score: float  # 0..100
     factors: dict[str, Any]  # объяснение (какие признаки повлияли)
     algorithm_version: str
 
@@ -23,5 +23,4 @@ class ScoringAdapter(Protocol):
 
     version: str
 
-    def score(self, clients: list[dict[str, Any]]) -> list[ScoreResult]:
-        ...
+    def score(self, clients: list[dict[str, Any]]) -> list[ScoreResult]: ...

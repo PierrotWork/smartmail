@@ -42,9 +42,7 @@ class Client(Base):
         back_populates="client", cascade="all, delete-orphan"
     )
 
-    __table_args__ = (
-        Index("ix_clients_status_score", "status", "current_score"),
-    )
+    __table_args__ = (Index("ix_clients_status_score", "status", "current_score"),)
 
 
 class ScoreHistory(Base):

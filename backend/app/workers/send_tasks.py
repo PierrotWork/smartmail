@@ -72,8 +72,7 @@ async def _send(campaign_id: int) -> dict:
 
             client_ids = [r.client_id for r in recipients]
             clients = {
-                c.id: c
-                for c in db.scalars(select(Client).where(Client.id.in_(client_ids))).all()
+                c.id: c for c in db.scalars(select(Client).where(Client.id.in_(client_ids))).all()
             }
 
             messages: list[EmailMessage] = []
@@ -87,9 +86,7 @@ async def _send(campaign_id: int) -> dict:
 
                 try:
                     variables = _build_variables(client)
-                    subject, html, text = tmpl_service.render_subject_and_body(
-                        template, variables
-                    )
+                    subject, html, text = tmpl_service.render_subject_and_body(template, variables)
                 except Exception as e:  # noqa: BLE001
                     log.warning("Template render failed for client %s: %s", client.id, e)
                     r.status = RecipientStatus.FAILED

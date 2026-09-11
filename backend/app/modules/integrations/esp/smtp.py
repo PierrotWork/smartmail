@@ -14,7 +14,9 @@ class SMTPAdapter:
     async def send(self, message: EmailMessage) -> SendResult:
         mime = MIMEMessage()
         mime["From"] = f"{message.from_name} <{message.from_email}>"
-        mime["To"] = f"{message.to_name} <{message.to_email}>" if message.to_name else message.to_email
+        mime["To"] = (
+            f"{message.to_name} <{message.to_email}>" if message.to_name else message.to_email
+        )
         mime["Subject"] = message.subject
         mime["X-Message-Id"] = message.message_id
         for k, v in message.headers.items():
