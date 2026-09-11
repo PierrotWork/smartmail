@@ -1,9 +1,10 @@
 """HTTP-эндпойнты клиентской базы."""
 
-from fastapi import APIRouter, Query
+from fastapi import APIRouter, HTTPException, Query, status
 
 from app.deps import CurrentUser, DbSession
 from app.modules.clients import service
+from app.modules.clients.models import Client
 from app.modules.clients.schemas import (
     ClientFilter,
     ClientListResponse,
@@ -47,9 +48,6 @@ def segment_preview(
 
 @router.get("/{client_id}", response_model=ClientRead)
 def get_client(client_id: int, db: DbSession, user: CurrentUser) -> ClientRead:
-    from fastapi import HTTPException, status
-    from app.modules.clients.models import Client
-
     client = db.get(Client, client_id)
     if client is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Клиент не найден")

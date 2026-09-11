@@ -1,7 +1,7 @@
 """Бизнес-логика рассылок."""
 
 import uuid
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 
 from sqlalchemy import func, select
 from sqlalchemy.orm import Session
@@ -79,7 +79,7 @@ def start_campaign(db: Session, campaign_id: int) -> Campaign:
         freeze_segment(db, campaign)
 
     campaign.status = CampaignStatus.SENDING
-    campaign.started_at = datetime.now(timezone.utc)
+    campaign.started_at = datetime.now(UTC)
     db.commit()
     db.refresh(campaign)
 

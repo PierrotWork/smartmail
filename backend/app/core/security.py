@@ -1,6 +1,6 @@
 """Хеширование паролей и JWT-токены."""
 
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta
 from typing import Any
 
 from jose import JWTError, jwt
@@ -20,7 +20,7 @@ def verify_password(plain: str, hashed: str) -> bool:
 
 
 def create_access_token(subject: str | int, extra: dict[str, Any] | None = None) -> str:
-    now = datetime.now(timezone.utc)
+    now = datetime.now(UTC)
     payload = {
         "sub": str(subject),
         "iat": now,
@@ -33,7 +33,7 @@ def create_access_token(subject: str | int, extra: dict[str, Any] | None = None)
 
 
 def create_refresh_token(subject: str | int) -> str:
-    now = datetime.now(timezone.utc)
+    now = datetime.now(UTC)
     payload = {
         "sub": str(subject),
         "iat": now,

@@ -1,7 +1,7 @@
 """Модели рассылок и статусов доставки."""
 
 from datetime import datetime
-from enum import Enum
+from enum import StrEnum
 
 from sqlalchemy import DateTime, ForeignKey, Index, String, Text
 from sqlalchemy.dialects.postgresql import JSONB
@@ -10,7 +10,7 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship
 from app.database import Base
 
 
-class CampaignStatus(str, Enum):
+class CampaignStatus(StrEnum):
     DRAFT = "draft"
     SCHEDULED = "scheduled"
     SENDING = "sending"
@@ -19,7 +19,7 @@ class CampaignStatus(str, Enum):
     FAILED = "failed"
 
 
-class RecipientStatus(str, Enum):
+class RecipientStatus(StrEnum):
     PENDING = "pending"
     SENT = "sent"
     DELIVERED = "delivered"

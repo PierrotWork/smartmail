@@ -1,6 +1,6 @@
 """Бизнес-логика авторизации: регистрация, логин, обновление токенов."""
 
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 
 from sqlalchemy import select
 from sqlalchemy.orm import Session
@@ -44,7 +44,7 @@ def authenticate(db: Session, email: str, password: str) -> User:
     if not user.is_active:
         raise AuthError("Учётная запись отключена")
 
-    user.last_login_at = datetime.now(timezone.utc)
+    user.last_login_at = datetime.now(UTC)
     db.commit()
     return user
 

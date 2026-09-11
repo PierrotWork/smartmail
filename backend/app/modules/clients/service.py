@@ -1,6 +1,6 @@
 """Работа с клиентской базой: фильтрация, сегментация, апсерт."""
 
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from typing import Any
 
 from sqlalchemy import Select, and_, func, or_, select
@@ -95,7 +95,7 @@ def upsert_from_external(db: Session, records: list[dict[str, Any]]) -> tuple[in
     """
     created = 0
     updated = 0
-    now = datetime.now(timezone.utc)
+    now = datetime.now(UTC)
 
     for rec in records:
         ext_id = rec.get("external_id")

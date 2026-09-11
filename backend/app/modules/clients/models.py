@@ -1,16 +1,16 @@
 """Модели клиентов и истории скоров."""
 
 from datetime import datetime
-from enum import Enum
+from enum import StrEnum
 
-from sqlalchemy import JSON, DateTime, Float, ForeignKey, Index, Integer, String
+from sqlalchemy import JSON, DateTime, Float, ForeignKey, Index, String
 from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.database import Base
 
 
-class ClientStatus(str, Enum):
+class ClientStatus(StrEnum):
     ACTIVE = "active"
     ARCHIVED = "archived"
 

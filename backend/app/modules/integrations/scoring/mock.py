@@ -10,7 +10,6 @@
   - -20 если email давно не активен (attributes.last_activity_days > 90)
 """
 
-from datetime import datetime, timezone
 from typing import Any
 
 from app.modules.integrations.scoring.base import ScoreResult

@@ -2,7 +2,7 @@
 
 import asyncio
 import logging
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 
 from sqlalchemy import select
 
@@ -30,7 +30,7 @@ def send_campaign(self, campaign_id: int) -> dict:
     """Отправка рассылки батчами."""
     try:
         return asyncio.run(_send(campaign_id))
-    except Exception as exc:  # noqa: BLE001
+    except Exception:  # noqa: BLE001
         log.exception("send_campaign failed for %s", campaign_id)
         with SessionLocal() as db:
             campaign = db.get(Campaign, campaign_id)
@@ -114,7 +114,7 @@ async def _send(campaign_id: int) -> dict:
                 recipient_by_msg_id[r.message_id] = r
 
             results = await esp.send_batch(messages) if messages else []
-            now = datetime.now(timezone.utc)
+            now = datetime.now(UTC)
             for res in results:
                 r = recipient_by_msg_id.get(res.message_id)
                 if r is None:
@@ -132,7 +132,7 @@ async def _send(campaign_id: int) -> dict:
 
         # Все получатели обработаны — завершаем рассылку
         campaign.status = CampaignStatus.COMPLETED
-        campaign.finished_at = datetime.now(timezone.utc)
+        campaign.finished_at = datetime.now(UTC)
         db.commit()
 
     return {"campaign_id": campaign_id, "sent": sent_ok, "failed": sent_failed}
