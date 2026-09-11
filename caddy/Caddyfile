@@ -1,0 +1,29 @@
+# Caddy — reverse-proxy с автоматическим TLS через Let's Encrypt.
+#
+# Требования:
+#   - Домен ${APP_DOMAIN} должен указывать на IP этого сервера (A/AAAA-запись)
+#   - Порты 80 и 443 должны быть открыты во внешнем firewall
+#
+# Caddy сам выпустит и продлит сертификат. Никаких certbot и cron не нужно.
+
+{$APP_DOMAIN} {
+    encode zstd gzip
+
+    # Общие security-заголовки
+    header {
+        Strict-Transport-Security "max-age=31536000; includeSubDomains"
+        X-Content-Type-Options "nosniff"
+        X-Frame-Options "SAMEORIGIN"
+        Referrer-Policy "strict-origin-when-cross-origin"
+        -Server
+    }
+
+    # Всё, включая API и SPA-роуты, обслуживает контейнер frontend.
+    # У него внутри свой nginx, который раздаёт статику и проксирует /api → backend.
+    reverse_proxy frontend:80
+}
+
+# Fallback на случай, если запрос пришёл по IP (без домена) — редирект на HTTPS-домен.
+:80 {
+    redir https://{$APP_DOMAIN}{uri} permanent
+}

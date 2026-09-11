@@ -1,0 +1,41 @@
+name: Deploy to VPS
+
+# Автоматический деплой на VPS через SSH при пуше в main.
+#
+# Требования — в Settings → Secrets and variables → Actions добавь:
+#   VPS_HOST         — IP или домен VPS
+#   VPS_USER         — SSH-пользователь (обычно "deploy" или "ubuntu")
+#   VPS_SSH_KEY      — приватный SSH-ключ (не путать с публичным)
+#   VPS_APP_PATH     — путь к папке проекта на сервере, например /opt/smartmail
+#
+# При первом ране на VPS должен быть клон репо:
+#   sudo mkdir -p /opt/smartmail && sudo chown $USER /opt/smartmail
+#   git clone git@github.com:<user>/<repo>.git /opt/smartmail
+#   cd /opt/smartmail && cp .env.example .env && nano .env  # заполнить
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:      # ручной запуск из UI Actions
+
+jobs:
+  deploy:
+    name: Deploy
+    runs-on: ubuntu-latest
+    needs: []             # не блокируем на CI — можно поменять на [ci] если хочется
+
+    steps:
+      - name: Deploy over SSH
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USER }}
+          key: ${{ secrets.VPS_SSH_KEY }}
+          script: |
+            set -e
+            cd ${{ secrets.VPS_APP_PATH }}
+            git pull --ff-only origin main
+            docker compose -f docker-compose.yml -f docker-compose.prod.yml pull || true
+            docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d --build
+            docker compose -f docker-compose.yml -f docker-compose.prod.yml exec -T backend alembic upgrade head
+            docker image prune -f

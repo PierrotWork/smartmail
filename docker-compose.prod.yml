@@ -1,0 +1,87 @@
+# docker-compose для продакшена на VPS.
+#
+# Использование:
+#   docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d --build
+#
+# Отличия от docker-compose.yml:
+#   - убран MailHog (только для локальной разработки)
+#   - postgres и redis НЕ проброшены наружу (доступны только внутри docker-сети)
+#   - backend без --reload и без bind-mount сорсов
+#   - frontend собирается как статика и обслуживается через nginx (target: prod)
+#   - добавлен caddy как reverse-proxy с автоматическим TLS через Let's Encrypt
+#   - restart: always на всех сервисах
+#
+# ВНИМАНИЕ:
+#   1. Скопируй .env.example → .env и заполни РЕАЛЬНЫМИ значениями:
+#        - APP_SECRET_KEY (32+ случайных байта)
+#        - POSTGRES_PASSWORD
+#        - CRM_API_KEY, ESP-ключи и т. д.
+#   2. Укажи в .env свой домен:
+#        - APP_DOMAIN=example.com
+#        - CORS_ORIGINS=https://example.com
+#        - VITE_API_BASE_URL=https://example.com
+
+services:
+  postgres:
+    ports: []            # закрываем публичный порт
+    restart: always
+
+  redis:
+    ports: []            # закрываем публичный порт
+    restart: always
+
+  mailhog:
+    profiles: ["disabled"]   # не поднимаем в prod
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    restart: always
+    volumes: []          # НЕТ bind-mount сорсов в prod
+    command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --workers 4
+    expose:
+      - "8000"
+    ports: []            # backend доступен только через nginx
+
+  worker:
+    restart: always
+    volumes: []
+    command: celery -A app.workers.celery_app worker --loglevel=info -Q sync,score,send,webhooks --concurrency=4
+
+  beat:
+    restart: always
+    volumes: []
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+      target: prod
+      args:
+        VITE_API_BASE_URL: ${VITE_API_BASE_URL:-/}
+    restart: always
+    volumes: []
+    ports: []
+    expose:
+      - "80"
+
+  caddy:
+    image: caddy:2-alpine
+    container_name: smartmail-caddy
+    restart: always
+    ports:
+      - "80:80"
+      - "443:443"
+    environment:
+      - APP_DOMAIN=${APP_DOMAIN:-localhost}
+    volumes:
+      - ./caddy/Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    depends_on:
+      - frontend
+
+volumes:
+  caddy_data:
+  caddy_config:
