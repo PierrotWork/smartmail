@@ -51,7 +51,7 @@ def authenticate(db: Session, email: str, password: str) -> User:
 
 def issue_tokens(user: User) -> TokenPair:
     return TokenPair(
-        access_token=create_access_token(user.id, extra={"role": user.role.value}),
+        access_token=create_access_token(user.id, extra={"role": str(user.role)}),
         refresh_token=create_refresh_token(user.id),
     )
 
