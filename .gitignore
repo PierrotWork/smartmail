@@ -52,6 +52,10 @@ yarn-error.log*
 logs/
 *.log
 
+# Celery runtime
+celerybeat-schedule*
+celerybeat.pid
+
 # DB dumps
 *.sql.gz
 *.dump
