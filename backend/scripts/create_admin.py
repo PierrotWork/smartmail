@@ -5,9 +5,13 @@
 """
 
 import sys
+from pathlib import Path
 
-from app.database import SessionLocal
-from app.modules.auth.service import ensure_bootstrap_admin
+# Позволяет запускать скрипт напрямую из папки scripts/
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
+
+from app.database import SessionLocal  # noqa: E402
+from app.modules.auth.service import ensure_bootstrap_admin  # noqa: E402
 
 
 def main() -> int:

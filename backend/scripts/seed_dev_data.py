@@ -14,13 +14,17 @@
 import random
 import sys
 from datetime import UTC, datetime, timedelta
+from pathlib import Path
 
-from sqlalchemy import select
+# Позволяет запускать скрипт напрямую из папки scripts/
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
-from app.database import SessionLocal
-from app.modules.clients.models import Client, ClientStatus, ScoreHistory
-from app.modules.integrations.scoring.mock import get_scoring_adapter
-from app.modules.templates.models import EmailTemplate
+from sqlalchemy import select  # noqa: E402
+
+from app.database import SessionLocal  # noqa: E402
+from app.modules.clients.models import Client, ClientStatus, ScoreHistory  # noqa: E402
+from app.modules.integrations.scoring.mock import get_scoring_adapter  # noqa: E402
+from app.modules.templates.models import EmailTemplate  # noqa: E402
 
 # ---------- Тестовые данные ----------
 
