@@ -10,6 +10,7 @@ from app.config import settings
 from app.modules.auth.router import router as auth_router
 from app.modules.campaigns.router import router as campaigns_router
 from app.modules.clients.router import router as clients_router
+from app.modules.settings.router import router as settings_router
 from app.modules.templates.router import router as templates_router
 
 
@@ -48,3 +49,4 @@ app.include_router(auth_router, prefix="/api/v1/auth", tags=["auth"])
 app.include_router(clients_router, prefix="/api/v1/clients", tags=["clients"])
 app.include_router(templates_router, prefix="/api/v1/templates", tags=["templates"])
 app.include_router(campaigns_router, prefix="/api/v1/campaigns", tags=["campaigns"])
+app.include_router(settings_router, prefix="/api/v1/settings", tags=["settings"])

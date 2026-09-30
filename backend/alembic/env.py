@@ -12,6 +12,7 @@ from app.database import Base
 from app.modules.auth import models as _auth  # noqa: F401
 from app.modules.campaigns import models as _campaigns  # noqa: F401
 from app.modules.clients import models as _clients  # noqa: F401
+from app.modules.settings import models as _settings  # noqa: F401
 from app.modules.templates import models as _templates  # noqa: F401
 
 config = context.config

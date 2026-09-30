@@ -111,6 +111,28 @@ class GenericCRMAdapter:
         }
 
 
-def get_crm_adapter() -> GenericCRMAdapter:
-    """Фабрика — тут можно возвращать разные адаптеры по env."""
+def _read_setting(key: str) -> str | None:
+    """Прочитать значение настройки: сначала БД, потом env fallback."""
+    from app.database import SessionLocal
+    from app.modules.settings.service import get_value
+
+    with SessionLocal() as db:
+        return get_value(db, key)
+
+
+def get_crm_adapter():
+    """Фабрика адаптеров — выбирает реализацию по настройке `crm_provider`."""
+    provider = (_read_setting("crm_provider") or "generic").lower()
+
+    if provider == "datanewton":
+        from app.modules.integrations.crm.datanewton import DataNewtonAdapter
+
+        api_key = _read_setting("datanewton_api_key")
+        segment_ids_raw = _read_setting("datanewton_segment_ids") or ""
+        segment_ids = [
+            int(x.strip()) for x in segment_ids_raw.split(",") if x.strip().isdigit()
+        ]
+        return DataNewtonAdapter(api_key=api_key, segment_ids=segment_ids or None)
+
+    # По умолчанию — обобщённый REST-адаптер (для CRM, где Bearer + курсорная пагинация)
     return GenericCRMAdapter()

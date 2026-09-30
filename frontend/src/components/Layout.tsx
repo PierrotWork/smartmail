@@ -5,6 +5,7 @@ import {
   IconUsers,
   IconMailFast,
   IconTemplate,
+  IconSettings,
   IconLogout,
 } from "@tabler/icons-react";
 
@@ -61,6 +62,12 @@ export default function Layout() {
           to="/campaigns"
           label="Рассылки"
           leftSection={<IconMailFast size={18} />}
+        />
+        <NavLink
+          component={RouterNavLink}
+          to="/settings"
+          label="Настройки"
+          leftSection={<IconSettings size={18} />}
         />
       </AppShell.Navbar>
 

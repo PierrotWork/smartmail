@@ -40,9 +40,25 @@ class Settings(BaseSettings):
         return [o.strip() for o in self.cors_origins.split(",") if o.strip()]
 
     # === CRM ===
+    crm_provider: Literal["generic", "datanewton"] = "datanewton"
     crm_api_base_url: str = ""
     crm_api_key: str = ""
     crm_sync_interval_minutes: int = 30
+
+    # === DataNewton ===
+    datanewton_api_key: str = ""
+    # Список ID сегментов для синка через запятую. Пусто = взять все не-reserved,
+    # непустые сегменты пользователя.
+    datanewton_segment_ids: str = ""
+    datanewton_export_timeout: int = 600  # секунд
+
+    @property
+    def datanewton_segment_ids_list(self) -> list[int]:
+        return [
+            int(x.strip())
+            for x in self.datanewton_segment_ids.split(",")
+            if x.strip().isdigit()
+        ]
 
     # === ESP ===
     esp_provider: Literal["smtp", "unisender", "sendgrid", "mailgun"] = "smtp"

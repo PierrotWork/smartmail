@@ -88,10 +88,25 @@ def random_tags() -> list[str]:
     return random.sample(ALL_TAGS, k=random.randint(0, 3))
 
 
+# Простая транслитерация — email-адрес по RFC 5321 должен быть ASCII
+# (кириллица допустима только в display-name письма, не в самом адресе).
+_TRANSLIT_MAP = {
+    "а": "a", "б": "b", "в": "v", "г": "g", "д": "d", "е": "e", "ё": "yo",
+    "ж": "zh", "з": "z", "и": "i", "й": "y", "к": "k", "л": "l", "м": "m",
+    "н": "n", "о": "o", "п": "p", "р": "r", "с": "s", "т": "t", "у": "u",
+    "ф": "f", "х": "h", "ц": "ts", "ч": "ch", "ш": "sh", "щ": "sch",
+    "ъ": "", "ы": "y", "ь": "", "э": "e", "ю": "yu", "я": "ya",
+}
+
+
+def translit(text: str) -> str:
+    return "".join(_TRANSLIT_MAP.get(ch, ch) for ch in text.lower())
+
+
 def random_client(i: int) -> dict:
     first = random.choice(FIRST_NAMES)
     last = random.choice(LAST_NAMES)
-    slug = f"{first.lower()}.{last.lower()}"
+    slug = f"{translit(first)}.{translit(last)}"
     return {
         "external_id": f"seed-{i:04d}",
         "email": f"{slug}{i}@example.com",

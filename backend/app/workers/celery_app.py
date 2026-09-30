@@ -5,6 +5,16 @@ from celery.schedules import crontab
 
 from app.config import settings
 
+# ВАЖНО: подцепить ВСЕ модели, чтобы SQLAlchemy metadata знала про все таблицы
+# и внешние ключи между модулями резолвились (иначе воркер падает на первом же
+# commit() c NoReferencedTableError). Без routers мы теряем неявные импорты,
+# которые есть в API-процессе через main.py.
+from app.modules.auth import models as _auth_models  # noqa: F401
+from app.modules.campaigns import models as _campaigns_models  # noqa: F401
+from app.modules.clients import models as _clients_models  # noqa: F401
+from app.modules.settings import models as _settings_models  # noqa: F401
+from app.modules.templates import models as _templates_models  # noqa: F401
+
 celery_app = Celery(
     "smartmail",
     broker=settings.celery_broker_url,

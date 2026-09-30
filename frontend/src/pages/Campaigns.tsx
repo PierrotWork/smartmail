@@ -1,7 +1,9 @@
+import { useState } from "react";
 import { Title, Card, Text, Stack, Table, Badge, Button, Group } from "@mantine/core";
 import { IconPlus } from "@tabler/icons-react";
 import { useQuery } from "@tanstack/react-query";
 import { api } from "@/api/client";
+import NewCampaignModal from "@/components/NewCampaignModal";
 
 interface Campaign {
   id: number;
@@ -21,6 +23,8 @@ const STATUS_COLORS: Record<string, string> = {
 };
 
 export default function Campaigns() {
+  const [modalOpen, setModalOpen] = useState(false);
+
   const { data, isLoading } = useQuery({
     queryKey: ["campaigns"],
     queryFn: async () => {
@@ -33,7 +37,12 @@ export default function Campaigns() {
     <Stack>
       <Group justify="space-between">
         <Title order={2}>Рассылки</Title>
-        <Button leftSection={<IconPlus size={16} />}>Новая рассылка</Button>
+        <Button
+          leftSection={<IconPlus size={16} />}
+          onClick={() => setModalOpen(true)}
+        >
+          Новая рассылка
+        </Button>
       </Group>
 
       <Card withBorder padding={0}>
@@ -68,7 +77,7 @@ export default function Campaigns() {
                 <Table.Tr>
                   <Table.Td colSpan={4}>
                     <Text c="dimmed" ta="center" py="lg">
-                      Пока нет ни одной рассылки
+                      Пока нет ни одной рассылки. Нажми «Новая рассылка» — соберём за минуту.
                     </Text>
                   </Table.Td>
                 </Table.Tr>
@@ -77,6 +86,8 @@ export default function Campaigns() {
           </Table>
         )}
       </Card>
+
+      <NewCampaignModal opened={modalOpen} onClose={() => setModalOpen(false)} />
     </Stack>
   );
 }
